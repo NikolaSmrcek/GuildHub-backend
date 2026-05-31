@@ -10,6 +10,11 @@ export class LootController {
     return { pong: true };
   }
 
+  @Get('raid-items')
+  getRaidItems() {
+    return this.lootService.getRaidItemCatalog();
+  }
+
   @Post('items')
   createItem(@Body() body: any) {
     return this.lootService.createItem(body);
