@@ -1,4 +1,4 @@
--- Migration: Create expansions and patches tables
+ -- Migration: Create expansions and patches tables
 -- Run against PostgreSQL
 
 CREATE TABLE IF NOT EXISTS expansions (

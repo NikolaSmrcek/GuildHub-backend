@@ -7,5 +7,5 @@ The model currently configured is **deepseek-chat** (DeepSeek V2.5).
 To run aider:
 
 ```bash
-aider --model deepseek-chat
+aider --model deepseek/deepseek-chat
 ```

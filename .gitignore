@@ -24,3 +24,4 @@ package-lock.json
 /.cache
 /.turbo
 /.vercel
+.aider*
