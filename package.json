@@ -9,8 +9,8 @@
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "node dist/main.js",
     "seed": "npx ts-node-dev src/seed/seed.ts",
-    "lint": "npx eslint \"src/**/*.ts\" --max-warnings 0",
-    "lint:fix": "npx eslint \"src/**/*.ts\" --fix",
+    "lint": "npx eslint --config eslint.config.mjs \"src/**/*.ts\" --max-warnings 0",
+    "lint:fix": "npx eslint --config eslint.config.mjs \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\""
   },
