@@ -21,6 +21,7 @@ async function seedExpansions(
     { name: 'Shadowlands', shortName: 'SL', releaseDate: new Date('2020-11-23') },
     { name: 'Dragonflight', shortName: 'DF', releaseDate: new Date('2022-11-28') },
     { name: 'The War Within', shortName: 'TWW', releaseDate: new Date('2024-08-26') },
+    { name: 'Midnight', shortName: 'MIDNIGHT', releaseDate: new Date('2025-06-30') },
   ];
 
   const existing = await expansionRepo.findAll();
@@ -57,6 +58,7 @@ function getPatchesForExpansion(shortName: string): string[] {
     SL: ['9.0.1', '9.0.2', '9.0.5', '9.1.0', '9.1.5', '9.2.0', '9.2.5'],
     DF: ['10.0.0', '10.0.2', '10.0.5', '10.0.7', '10.1.0', '10.1.5', '10.1.7', '10.2.0', '10.2.5', '10.2.7'],
     TWW: ['11.0.0', '11.0.2', '11.0.5'],
+    MIDNIGHT: ['12.0.0', '12.0.2', '12.0.5'],
   };
   return patches[shortName] || [];
 }
