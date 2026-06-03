@@ -8,7 +8,7 @@
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "node dist/main.js",
-    "seed": "ts-node-dev src/seeds/seed.ts"
+    "seed": "ts-node-dev src/seed/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
