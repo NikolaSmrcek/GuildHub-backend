@@ -12,27 +12,27 @@ import { Expansion } from '../expansion/expansion.entity';
 @Entity('patches')
 export class Patch {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'expansion_id' })
-  expansionId: string;
+  expansionId!: string;
 
   @ManyToOne(() => Expansion, (expansion) => expansion.patches)
   @JoinColumn({ name: 'expansion_id' })
-  expansion: Expansion;
+  expansion!: Expansion;
 
   @Column({ length: 20 })
-  patchNumber: string;
+  patchNumber!: string;
 
   @Column({ length: 255, nullable: true })
-  name: string;
+  name!: string;
 
   @Column({ type: 'date', nullable: true })
-  releaseDate: string;
+  releaseDate!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

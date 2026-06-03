@@ -10,18 +10,18 @@ async function seedExpansions(
   patchRepo: PatchRepository,
 ): Promise<void> {
   const expansions = [
-    { name: 'Classic', shortName: 'CLASSIC', releaseDate: new Date('2004-11-23') },
-    { name: 'The Burning Crusade', shortName: 'TBC', releaseDate: new Date('2007-01-16') },
-    { name: 'Wrath of the Lich King', shortName: 'WOTLK', releaseDate: new Date('2008-11-13') },
-    { name: 'Cataclysm', shortName: 'CATA', releaseDate: new Date('2010-12-07') },
-    { name: 'Mists of Pandaria', shortName: 'MOP', releaseDate: new Date('2012-09-25') },
-    { name: 'Warlords of Draenor', shortName: 'WOD', releaseDate: new Date('2014-11-13') },
-    { name: 'Legion', shortName: 'LEGION', releaseDate: new Date('2016-08-30') },
-    { name: 'Battle for Azeroth', shortName: 'BFA', releaseDate: new Date('2018-08-14') },
-    { name: 'Shadowlands', shortName: 'SL', releaseDate: new Date('2020-11-23') },
-    { name: 'Dragonflight', shortName: 'DF', releaseDate: new Date('2022-11-28') },
-    { name: 'The War Within', shortName: 'TWW', releaseDate: new Date('2024-08-26') },
-    { name: 'Midnight', shortName: 'MIDNIGHT', releaseDate: new Date('2025-06-30') },
+    { name: 'Classic', shortName: 'CLASSIC', releaseDate: '2004-11-23' },
+    { name: 'The Burning Crusade', shortName: 'TBC', releaseDate: '2007-01-16' },
+    { name: 'Wrath of the Lich King', shortName: 'WOTLK', releaseDate: '2008-11-13' },
+    { name: 'Cataclysm', shortName: 'CATA', releaseDate: '2010-12-07' },
+    { name: 'Mists of Pandaria', shortName: 'MOP', releaseDate: '2012-09-25' },
+    { name: 'Warlords of Draenor', shortName: 'WOD', releaseDate: '2014-11-13' },
+    { name: 'Legion', shortName: 'LEGION', releaseDate: '2016-08-30' },
+    { name: 'Battle for Azeroth', shortName: 'BFA', releaseDate: '2018-08-14' },
+    { name: 'Shadowlands', shortName: 'SL', releaseDate: '2020-11-23' },
+    { name: 'Dragonflight', shortName: 'DF', releaseDate: '2022-11-28' },
+    { name: 'The War Within', shortName: 'TWW', releaseDate: '2024-08-26' },
+    { name: 'Midnight', shortName: 'MIDNIGHT', releaseDate: '2025-06-30' },
   ];
 
   const existing = await expansionRepo.findAll();
