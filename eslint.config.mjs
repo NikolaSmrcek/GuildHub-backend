@@ -9,7 +9,7 @@ export default [
     ignores: ['dist/', 'node_modules/', '*.js'],
   },
   // TypeScript recommended config (includes parser and plugin)
-  tseslint.configs.recommended,
+  ...tseslint.configs.recommended(),
   // Our custom overrides
   {
     files: ['src/**/*.ts'],
