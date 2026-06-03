@@ -29,13 +29,4 @@ export class ExpansionService {
     this.cache = null;
     await this.getExpansions();
   }
-
-  /**
-   * Placeholder for web search integration.
-   * In production, call an external API (e.g., WoW API) to fetch current expansion names.
-   */
-  async fetchExpansionNamesFromWeb(): Promise<string[]> {
-    // TODO: implement actual web scraping / API call
-    return ['The War Within', 'Dragonflight', 'Shadowlands'];
-  }
 }
