@@ -2,27 +2,32 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigService } from './config.service';
+import { DatabaseInitService } from './database-init.service';
 import { LootModule } from './modules/loot/loot.module';
 import { ExpansionModule } from './modules/expansion/expansion.module';
 import { PatchModule } from './modules/patch/patch.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: Number(process.env.DB_PORT) || 5432,
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'guildhub',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, // use migrations
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.dbHost,
+        port: config.dbPort,
+        username: config.dbUser,
+        password: config.dbPassword,
+        database: config.dbName,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: false, // use migrations
+      }),
     }),
     LootModule,
     ExpansionModule,
     PatchModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService, DatabaseInitService],
 })
 export class AppModule {}

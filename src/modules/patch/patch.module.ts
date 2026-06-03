@@ -8,6 +8,6 @@ import { PatchService } from './patch.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Patch])],
   providers: [PatchRepository, PatchService],
-  exports: [PatchService],
+  exports: [PatchService, PatchRepository],
 })
 export class PatchModule {}

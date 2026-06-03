@@ -8,6 +8,6 @@ import { ExpansionService } from './expansion.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Expansion])],
   providers: [ExpansionRepository, ExpansionService],
-  exports: [ExpansionService],
+  exports: [ExpansionService, ExpansionRepository],
 })
 export class ExpansionModule {}
