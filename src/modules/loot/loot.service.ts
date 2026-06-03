@@ -28,10 +28,10 @@ export class LootService {
                 sourcePatch: '12.0.5',
                 playersPriority: [
                   { id: 'player-1', displayName: 'Valena', role: 'healer', priority: 'main' },
-                  { id: 'player-2', displayName: 'Brox', role: 'tank', priority: 'offspec' }
-                ]
-              }
-            ]
+                  { id: 'player-2', displayName: 'Brox', role: 'tank', priority: 'offspec' },
+                ],
+              },
+            ],
           },
           Normal: {
             items: [
@@ -41,10 +41,10 @@ export class LootService {
                 ilvl: 452,
                 sourcePatch: '12.0.5',
                 playersPriority: [
-                  { id: 'player-3', displayName: 'Arya', role: 'damage', priority: 'main' }
-                ]
-              }
-            ]
+                  { id: 'player-3', displayName: 'Arya', role: 'damage', priority: 'main' },
+                ],
+              },
+            ],
           },
           Heroic: {
             items: [
@@ -54,10 +54,10 @@ export class LootService {
                 ilvl: 455,
                 sourcePatch: '12.0.5',
                 playersPriority: [
-                  { id: 'player-4', displayName: 'Joren', role: 'tank', priority: 'main' }
-                ]
-              }
-            ]
+                  { id: 'player-4', displayName: 'Joren', role: 'tank', priority: 'main' },
+                ],
+              },
+            ],
           },
           Mythic: {
             items: [
@@ -67,11 +67,11 @@ export class LootService {
                 ilvl: 458,
                 sourcePatch: '12.0.5',
                 playersPriority: [
-                  { id: 'player-5', displayName: 'Seris', role: 'damage', priority: 'main' }
-                ]
+                  { id: 'player-5', displayName: 'Seris', role: 'damage', priority: 'main' },
+                ],
               },
-            ]
-          }
+            ],
+          },
         },
         HuntsmanAltimor: {
           LFR: {
@@ -82,13 +82,13 @@ export class LootService {
                 ilvl: 448,
                 sourcePatch: '12.0.5',
                 playersPriority: [
-                  { id: 'player-2', displayName: 'Brox', role: 'tank', priority: 'main' }
-                ]
-              }
-            ]
-          }
-        }
-      }
+                  { id: 'player-2', displayName: 'Brox', role: 'tank', priority: 'main' },
+                ],
+              },
+            ],
+          },
+        },
+      },
     };
   }
 }

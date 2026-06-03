@@ -4,6 +4,6 @@ import { LootService } from './loot.service';
 
 @Module({
   controllers: [LootController],
-  providers: [LootService]
+  providers: [LootService],
 })
 export class LootModule {}
