@@ -21,18 +21,18 @@ export class Patch {
   @JoinColumn({ name: 'expansion_id' })
   expansion!: Expansion;
 
-  @Column({ length: 20 })
+  @Column({ name: 'patch_number', length: 20 })
   patchNumber!: string;
 
   @Column({ length: 255, nullable: true })
   name!: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ name: 'release_date', type: 'date', nullable: true })
   releaseDate!: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 }

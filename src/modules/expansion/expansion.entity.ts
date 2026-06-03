@@ -16,16 +16,16 @@ export class Expansion {
   @Column({ length: 255 })
   name!: string;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ name: 'short_name', length: 50, nullable: true })
   shortName!: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ name: 'release_date', type: 'date', nullable: true })
   releaseDate!: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
   @OneToMany(() => Patch, (patch) => patch.expansion)
