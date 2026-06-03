@@ -25,6 +25,20 @@ export class ExpansionService {
     return expansions.find((e) => e.id === id) ?? null;
   }
 
+  async getLatestExpansion(): Promise<Expansion | null> {
+    const expansions = await this.getExpansions();
+    if (expansions.length === 0) {
+      return null;
+    }
+    // sort by releaseDate descending, treat null dates as oldest
+    const sorted = [...expansions].sort((a, b) => {
+      const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : 0;
+      const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : 0;
+      return dateB - dateA;
+    });
+    return sorted[0];
+  }
+
   async refreshCache(): Promise<void> {
     this.cache = null;
     await this.getExpansions();
