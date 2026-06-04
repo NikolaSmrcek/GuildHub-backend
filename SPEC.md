@@ -12,13 +12,14 @@ Goals
 - Support auditability and replayability of distribution decisions.
 - Be extensible for future distribution methods (need before/after, DKP, random roll).
 
-Scope (Iteration 1)
--------------------
+Scope (Iteration 1 — Content Catalog)
+--------------------------------------
 
-- Core domain: Guild, Member, Raid, Item, LootRequest, DistributionRecord, CouncilVote.
 - Content domain: Expansion, Patch, Season, Raid (instance), Boss, Difficulty, Item (bound to boss per difficulty).
-- API endpoints for creating items, submitting loot requests, opening a council decision, casting votes, and recording final distribution.
+- API endpoints for reading the content catalog (expansions, patches, seasons, raids, bosses, items).
 - Persistence-ready models (JSON schemas included). Authentication/authorization will be stubbed as placeholders.
+- Seed data for expansions and patches.
+> **TODO**: Loot council domain (Guild, Member, RaidEvent, LootRequest, CouncilVote, DistributionRecord) and related endpoints in a future iteration.
 
 Out of scope
 ------------
@@ -106,22 +107,15 @@ Core Concepts & Terms
 - **Boss**: An encounter within a raid. Has one or more difficulties.
 - **Difficulty**: A difficulty tier for a boss encounter — one of `LFR`, `Normal`, `Heroic`, `Mythic`. Items drop at this level.
 - **Item**: Dropped loot bound to a specific boss/difficulty combination. Attributes (ilvl, stats) vary by difficulty.
-- **Guild**: Container for members and raids.
-- **Member**: A user in the guild (id, displayName, roles).
-- **Raid** (event): An occurrence where a guild runs a raid instance (timestamp, zone, attendees). Links to the raid instance definition.
-- **LootRequest**: Member requests an item (request reason, timestamp, priority).
-- **LootCouncil**: A decision session for one or more items within a raid event.
-- **CouncilVote**: A vote by a council member for/against/abstain and optional weight or comment.
-- **DistributionRecord**: Final assignment of an item (recipient, timestamp, rationale).
+> **TODO**: Loot council terms (Guild, Member, RaidEvent, LootRequest, CouncilVote, DistributionRecord) to be added in a future iteration.
 
-Acceptance Criteria (Iteration 1)
---------------------------------
+Acceptance Criteria (Iteration 1 — Content Catalog)
+----------------------------------------------------
 
-- Create/list items and raids.
-- Members can submit loot requests for items from a raid.
-- Officers can create a LootCouncil session tied to a raid and one or more items.
-- Council members can vote; system records votes immutably.
-- An officer can finalize distribution for an item; system creates DistributionRecord and marks requests as resolved.
+- Seed expansions with patches and seasons.
+- Seed raids with bosses, difficulties, and items.
+- Read endpoints return the full content hierarchy.
+> **TODO**: Loot council acceptance criteria in a future iteration.
 
 Security & Privacy
 ------------------
@@ -361,27 +355,7 @@ Notes: use authentication middleware; endpoints use guild-scoped routes (prefix:
 - `GET /api/items` — list items (query params: expansionId, raidId, bossId, difficulty, patch)
 - `GET /api/items/:id` — get item details
 
-### Guild-scoped / Loot Council endpoints
-
-- `POST /api/guilds/:guildId/raids` — create raid event
-- `GET /api/guilds/:guildId/raids` — list raid events
-- `POST /api/guilds/:guildId/items` — create item (obsolete once content catalog is populated; kept for manual overrides)
-- `GET /api/guilds/:guildId/items` — list items (includes catalog + custom)
-- `POST /api/guilds/:guildId/raids/:raidEventId/items/:itemId/requests` — create loot request
-- `GET /api/guilds/:guildId/raids/:raidEventId/requests` — list requests for raid event
-- `POST /api/guilds/:guildId/raids/:raidEventId/councils` — create LootCouncil session (items[])
-- `POST /api/guilds/:guildId/councils/:councilId/votes` — cast a CouncilVote
-- `POST /api/guilds/:guildId/councils/:councilId/finalize` — finalize distribution for an item (body: itemId, recipientId, rationale)
-
-Example: finalize request body
-
-```json
-{
-  "itemId": "item-uuid",
-  "recipientId": "member-uuid",
-  "rationale": "Consensus by council: highest need"
-}
-```
+> **TODO**: Guild-scoped / Loot Council endpoints (create raid event, loot requests, councils, votes, finalize distribution) to be implemented in a future iteration.
 
 Event flows (simplified)
 ------------------------
@@ -394,61 +368,47 @@ Event flows (simplified)
 5. Each boss seeds **Difficulties** (LFR, Normal, Heroic, Mythic).
 6. Each difficulty seeds **Items** — the same item name may appear on multiple difficulties with different ilvls.
 
-### Loot council flow
-1. Raid event occurs, items recorded.
-2. Members submit `LootRequest` entries for items within the raid event.
-3. Officer opens a `LootCouncil` session referencing the raid event and items.
-4. Council members cast `CouncilVote`s; votes are stored immutably.
-5. Officer finalizes distribution for an item; system creates `DistributionRecord` and marks related `LootRequest`s as `resolved`.
-6. Audit log captures the finalized payload.
+> **TODO**: Loot council flow (requests, councils, votes, finalize, audit log) to be implemented in a future iteration.
 
 Testing & Validation
 --------------------
 
-- Unit tests for controllers, services, and vote aggregation logic.
-- Integration tests for the finalize flow (requests -> votes -> distribution record).
+- Unit tests for content catalog services and controllers.
+> **TODO**: Loot council tests (vote aggregation, finalize flow) in a future sprint.
 
-Milestones (first 2 sprints)
----------------------------
+Milestones (first sprint)
+-------------------------
 
 Sprint 1
 - Implement content data models and persistence (Expansion, Patch, Season, Raid, Boss, Difficulty, Item).
-- Implement core loot domain models (Member, Guild, LootRequest, LootCouncil, CouncilVote, DistributionRecord).
-- Implement endpoints: create/list raids, items, requests.
+- Implement basic content catalog seeding.
+- Implement content catalog read endpoints (GET /api/expansions, /api/patches, /api/seasons, /api/raids, /api/bosses, /api/items).
 
-Sprint 2
-- Implement council session endpoints, voting, finalize flow, and audit logs.
-- Add tests and basic documentation.
+> **TODO**: Loot council domain (LootRequest, CouncilVote, DistributionRecord) and related endpoints to be implemented in a future sprint.
 
 Acceptance test scenarios (examples)
 ----------------------------------
 
-- Scenario A: Single item, two requests, council with three voters yields unanimous `yes`; finalize assigns to requester A and marks requests resolved.
-- Scenario B: Vote ties — officer must choose; finalize still records rationale and votes.
+> **TODO**: Acceptance tests for loot council flows in a future iteration.
 
 Implementation notes for engineers and AI agents
 ---------------------------------------------
 
 - Keep domain models small and explicit; store timestamps in ISO 8601.
-- Design APIs to be idempotent where possible (e.g., casting the same vote twice should be rejected or update the previous vote).
-- Store votes and distributions immutably to support audits.
 - Items are bound to a specific boss+difficulty combination. The same item name may appear on multiple difficulties with different ilvls.
 - Raids belong to one expansion and one or more patches (many-to-many via junction table). A raid available in multiple patches is still the same raid instance definition.
 - A Season spans one or more patches. Each patch belongs to exactly one season.
-- A `RaidEvent` (the occurrence of a guild running a raid) references the `Raid` instance definition plus a timestamp, attendees, etc.
+> **TODO**: Loot council implementation notes (idempotent votes, immutable distributions, append-only audit logs) to be added in a future iteration.
 
 Glossary
 -------
 
-- **Loot Council**: a group of trusted officers who decide item recipients.
-- **Offspec**: item for secondary/alternate character.
 - **LFR**: Looking For Raid — the easiest difficulty tier.
-- **Raid Event**: a specific occurrence of a guild running a raid instance (as opposed to the raid instance definition).
+> **TODO**: Loot council glossary terms (Loot Council, Offspec, Raid Event) to be added in a future iteration.
 
 Files to add in repo (suggested)
 -------------------------------
 
-- `src/modules/loot/*` — controllers, services, models, DTOs.
 - `src/modules/expansion/*` — expansion CRUD.
 - `src/modules/patch/*` — patch CRUD.
 - `src/modules/season/*` — season entity + module.
@@ -456,7 +416,7 @@ Files to add in repo (suggested)
 - `src/modules/boss/*` — boss entity + module.
 - `src/modules/difficulty/*` — difficulty entity + module.
 - `src/modules/item/*` — item entity + module (content catalog).
-- `tests/loot/*` — unit and integration tests.
 - `migrations/*` — initial schema for chosen ORM.
+> **TODO**: Loot council modules (`src/modules/loot/*`, member, guild, raid_event entities) to be added in a future iteration.
 
 End of SPEC
