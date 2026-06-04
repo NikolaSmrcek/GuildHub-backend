@@ -11,15 +11,15 @@ export class PatchRepository {
   ) {}
 
   async findAll(): Promise<Patch[]> {
-    return this.repo.find({ relations: { expansion: true } });
+    return this.repo.find({ relations: { expansion: true, season: true } });
   }
 
   async findById(id: string): Promise<Patch | null> {
-    return this.repo.findOne({ where: { id }, relations: { expansion: true } });
+    return this.repo.findOne({ where: { id }, relations: { expansion: true, season: true } });
   }
 
   async findByExpansionId(expansionId: string): Promise<Patch[]> {
-    return this.repo.find({ where: { expansionId }, relations: { expansion: true } });
+    return this.repo.find({ where: { expansionId }, relations: { expansion: true, season: true } });
   }
 
   async create(data: Partial<Patch>): Promise<Patch> {

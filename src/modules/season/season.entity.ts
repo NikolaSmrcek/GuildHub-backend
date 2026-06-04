@@ -7,21 +7,17 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Patch } from '../patch/patch.entity';
-import { Raid } from '../raid/raid.entity';
 
-@Entity('expansions')
-export class Expansion {
+@Entity('seasons')
+export class Season {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({ length: 255 })
   name!: string;
 
-  @Column({ name: 'short_name', length: 50, nullable: true })
-  shortName!: string;
-
-  @Column({ name: 'release_date', type: 'date', nullable: true })
-  releaseDate!: string;
+  @Column({ name: 'expansion_id', nullable: true })
+  expansionId!: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
@@ -29,9 +25,6 @@ export class Expansion {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @OneToMany(() => Patch, (patch) => patch.expansion)
+  @OneToMany(() => Patch, (patch) => patch.season)
   patches!: Patch[];
-
-  @OneToMany(() => Raid, (raid) => raid.expansionId)
-  raids!: Raid[];
 }

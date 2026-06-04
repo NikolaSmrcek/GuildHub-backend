@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Expansion } from '../expansion/expansion.entity';
+import { Season } from '../season/season.entity';
 
 @Entity('patches')
 export class Patch {
@@ -20,6 +21,13 @@ export class Patch {
   @ManyToOne(() => Expansion, (expansion) => expansion.patches)
   @JoinColumn({ name: 'expansion_id' })
   expansion!: Expansion;
+
+  @Column({ name: 'season_id', nullable: true })
+  seasonId!: string;
+
+  @ManyToOne(() => Season, (season) => season.patches)
+  @JoinColumn({ name: 'season_id' })
+  season!: Season;
 
   @Column({ name: 'patch_number', length: 20 })
   patchNumber!: string;

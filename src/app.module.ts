@@ -7,6 +7,11 @@ import { DatabaseInitService } from './database-init.service';
 import { LootModule } from './modules/loot/loot.module';
 import { ExpansionModule } from './modules/expansion/expansion.module';
 import { PatchModule } from './modules/patch/patch.module';
+import { SeasonModule } from './modules/season/season.module';
+import { RaidModule } from './modules/raid/raid.module';
+import { BossModule } from './modules/boss/boss.module';
+import { DifficultyModule } from './modules/difficulty/difficulty.module';
+import { ItemModule } from './modules/item/item.module';
 
 @Module({
   imports: [
@@ -26,6 +31,11 @@ import { PatchModule } from './modules/patch/patch.module';
     LootModule,
     ExpansionModule,
     PatchModule,
+    SeasonModule,
+    RaidModule,
+    BossModule,
+    DifficultyModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, DatabaseInitService],
