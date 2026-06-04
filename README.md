@@ -74,8 +74,53 @@ Environment variables
 
 Add any other variables your app requires to `.env` and `.env.example`.
 
-Production
-----------
+Docker
+------
+
+### Prerequisites
+
+- Docker and Docker Compose
+- `.env` file configured (copy from `.env.example`)
+
+### Production
+
+Build the production image (multi-stage: `npm ci` → `npm run build` → run compiled JS):
+
+```bash
+docker compose up --build
+```
+
+Only rebuild the backend image if source changed without bringing Postgres down:
+
+```bash
+docker compose build backend
+docker compose up backend
+```
+
+### Development (hot-reload)
+
+The dev service uses `Dockerfile.dev` with `ts-node-dev` for watch mode and mounts `./src` and `./migrations` so changes reflect instantly:
+
+```bash
+docker compose --profile dev up --build backend-dev
+```
+
+To start only the Postgres service without the backend (run backend natively):
+
+```bash
+docker compose up -d postgres
+npm run start:dev
+```
+
+### Services
+
+| Service | Profile | Dockerfile | Source |
+|---------|---------|------------|--------|
+| `backend` | _(default)_ | `Dockerfile` | Built into image |
+| `backend-dev` | `dev` | `Dockerfile.dev` | Mounted from host via volumes |
+
+Native (without Docker)
+-----------------------
 
 Build and run:
 
@@ -84,8 +129,15 @@ npm run build
 npm run start:prod
 ```
 
+Or in development mode with hot-reload:
+
+```bash
+npm run start:dev
+```
+
 Helpful tips
 ------------
 
 - Use `nvm use` after creating `.nvmrc` to pick the correct Node version.
 - Keep `.env.example` up-to-date with required keys (no secrets).
+- Docker caches layers aggressively — run `docker compose build --no-cache backend` if you hit stale build issues.

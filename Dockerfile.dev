@@ -1,0 +1,17 @@
+# Development stage — uses ts-node-dev with file mounting
+FROM node:24.16.0-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+# Copy the rest — will be overwritten by volume mount in dev
+COPY tsconfig*.json ./
+COPY src/ ./src/
+COPY migrations/ ./migrations/
+
+EXPOSE 3000
+
+# Use ts-node-dev for hot-reload in development
+CMD ["npx", "ts-node-dev", "--respawn", "--transpile-only", "src/main.ts"]

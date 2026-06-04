@@ -20,8 +20,11 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Production ──
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: guildhub-backend
     restart: unless-stopped
     env_file:
@@ -35,6 +38,33 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       PORT: ${PORT:-3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── Development (hot-reload with mounted source) ──
+  backend-dev:
+    profiles:
+      - dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: guildhub-backend-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      PORT: ${PORT:-3000}
+    volumes:
+      - ./src:/app/src
+      - ./migrations:/app/migrations
     depends_on:
       postgres:
         condition: service_healthy

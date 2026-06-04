@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigService } from './config.service';
+import { ConfigModule } from './config.module';
 import { DatabaseInitService } from './database-init.service';
-import { LootModule } from './modules/loot/loot.module';
 import { ExpansionModule } from './modules/expansion/expansion.module';
 import { PatchModule } from './modules/patch/patch.module';
 import { SeasonModule } from './modules/season/season.module';
@@ -16,6 +16,7 @@ import { ItemModule } from './modules/item/item.module';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
@@ -28,7 +29,6 @@ import { ItemModule } from './modules/item/item.module';
         synchronize: false, // use migrations
       }),
     }),
-    LootModule,
     ExpansionModule,
     PatchModule,
     SeasonModule,
