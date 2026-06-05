@@ -1,5 +1,18 @@
 # Entity Relationships (TypeORM)
 
+## Account
+- `@OneToMany(() => Character)` → characters
+- Fields: email (unique), displayName, isActive, isDeleted (soft-delete)
+
+## Character
+- `@ManyToOne(() => Account)` → account (FK on account_id, NO cascade — soft-delete only)
+- `@ManyToOne(() => Guild)` → guild (FK on guild_id, nullable, NO cascade)
+- Fields: name, realm, faction, playerClass, spec, itemLevel, isDeleted (soft-delete)
+
+## Guild
+- `@OneToMany(() => Character)` → characters
+- Fields: name, realm, faction, guildType, isDeleted (soft-delete)
+
 ## Expansion
 - `@OneToMany(() => Patch)` → patches
 - `@OneToMany(() => Raid)` → raids (via expansionId)

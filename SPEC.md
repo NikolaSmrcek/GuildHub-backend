@@ -8,7 +8,7 @@ This document is a clear, model-friendly specification for the first backend ite
 Goals
 -----
 
-- Provide endpoints and data models to track items, loot requests, distribution decisions, and council votes.
+- Provide endpoints and data models for accounts, characters, guilds, items, loot requests, distribution decisions, and council votes.
 - Support auditability and replayability of distribution decisions.
 - Be extensible for future distribution methods (need before/after, DKP, random roll).
 
@@ -37,6 +37,21 @@ Stakeholders
 - Raid leaders and loot council members.
 - Guild officers and members.
 - Backend engineers and future AI agents that will extend features.
+
+Account / Character / Guild Relationships
+------------------------------------------
+
+```
+Account (1) ──► (many) Character
+Guild (1) ──► (many) Character
+Character (belongs to 1 account, belongs to 1 guild)
+```
+
+### Relationship rules
+
+- **Account** → has many **Characters** (e.g. a user can have alts).
+- **Character** → belongs to exactly one **Account**. Belongs to exactly one **Guild** (or none if un-guilded).
+- **Guild** → has many **Characters** (e.g. all members of a guild).
 
 Content Hierarchy
 -----------------
@@ -107,7 +122,10 @@ Core Concepts & Terms
 - **Boss**: An encounter within a raid. Has one or more difficulties.
 - **Difficulty**: A difficulty tier for a boss encounter — one of `LFR`, `Normal`, `Heroic`, `Mythic`. Items drop at this level.
 - **Item**: Dropped loot bound to a specific boss/difficulty combination. Attributes (ilvl, stats) vary by difficulty.
-> **TODO**: Loot council terms (Guild, Member, RaidEvent, LootRequest, CouncilVote, DistributionRecord) to be added in a future iteration.
+- **Account**: A user account that owns one or more characters. Identified by email.
+- **Character**: A WoW character belonging to an account and optionally a guild. Has name, realm, faction, class, spec, and item level.
+- **Guild**: A WoW guild on a specific realm and faction. Contains many characters.
+> **TODO**: Loot council terms (Member, RaidEvent, LootRequest, CouncilVote, DistributionRecord) to be added in a future iteration.
 
 Acceptance Criteria (Iteration 1 — Content Catalog)
 ----------------------------------------------------
@@ -131,6 +149,65 @@ Non-Functional Requirements
 
 Data Models (JSON Schema)
 -------------------------
+
+Account
+-------
+
+```json
+{
+  "$id": "Account",
+  "type": "object",
+  "required": ["id", "email", "displayName"],
+  "properties": {
+    "id": {"type": "string", "description": "UUID"},
+    "email": {"type": "string", "format": "email"},
+    "displayName": {"type": "string"},
+    "isActive": {"type": "boolean"},
+    "characters": {"type": "array", "items": {"$ref": "Character"}}
+  }
+}
+```
+
+Character
+---------
+
+```json
+{
+  "$id": "Character",
+  "type": "object",
+  "required": ["id", "name", "realm", "faction", "accountId"],
+  "properties": {
+    "id": {"type": "string", "description": "UUID"},
+    "name": {"type": "string"},
+    "realm": {"type": "string"},
+    "faction": {"type": "string"},
+    "playerClass": {"type": "string"},
+    "spec": {"type": "string"},
+    "itemLevel": {"type": "integer"},
+    "accountId": {"type": "string", "description": "UUID — owning Account"},
+    "guildId": {"type": "string", "description": "UUID — parent Guild (nullable)"}
+  }
+}
+```
+
+Guild
+-----
+
+```json
+{
+  "$id": "Guild",
+  "type": "object",
+  "required": ["id", "name", "realm", "faction"],
+  "properties": {
+    "id": {"type": "string", "description": "UUID"},
+    "name": {"type": "string"},
+    "realm": {"type": "string"},
+    "faction": {"type": "string"},
+    "guildType": {"type": "string", "default": "guild"},
+    "characters": {"type": "array", "items": {"$ref": "Character"}}
+  }
+}
+```
 
 Member
 ------

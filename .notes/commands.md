@@ -17,7 +17,7 @@ npm run build
 # Run migrations against PostgreSQL (adjust connection params)
 psql -h localhost -U postgres -d guildhub -f migrations\001_create_expansions_patches.sql
 psql -h localhost -U postgres -d guildhub -f migrations\002_create_content_hierarchy.sql
-psql -h localhost -U postgres -d guildhub -f migrations\003_create_loot_council_tables.sql
+psql -h localhost -U postgres -d guildhub -f migrations\003_create_accounts_characters_guilds.sql
 ```
 
 ## Docker (if using docker-compose.yml)

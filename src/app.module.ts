@@ -12,6 +12,9 @@ import { RaidModule } from './modules/raid/raid.module';
 import { BossModule } from './modules/boss/boss.module';
 import { DifficultyModule } from './modules/difficulty/difficulty.module';
 import { ItemModule } from './modules/item/item.module';
+import { AccountModule } from './modules/account/account.module';
+import { CharacterModule } from './modules/character/character.module';
+import { GuildModule } from './modules/guild/guild.module';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { ItemModule } from './modules/item/item.module';
     BossModule,
     DifficultyModule,
     ItemModule,
+    AccountModule,
+    CharacterModule,
+    GuildModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, DatabaseInitService],
