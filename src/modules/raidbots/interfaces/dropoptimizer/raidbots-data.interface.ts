@@ -1,5 +1,9 @@
 import { DropOptimizerItem } from './raidbots-dropoptimizeritem.interface';
 import { RaidbotsPlayer } from './raidbots-player.interface';
+import {
+  DropOptimizerRaidbotsProfileSets,
+  DropOptimizerResultsItem,
+} from './raidbots-profilesets.interface';
 
 /**
  * Expected shape of the Raidbots /data.json response.
@@ -8,12 +12,10 @@ import { RaidbotsPlayer } from './raidbots-player.interface';
 export interface RaidbotsDataJson {
   sim: {
     players: Array<RaidbotsPlayer>;
-    profilesets: {
-      results: Array<{
-        mean: number;
-        id: string;
-      }>;
-    };
+    profilesets: DropOptimizerRaidbotsProfileSets;
+    statistics: object;
+    targets: Array<object>;
+    sim_auras: Array<object>;
   };
   simbot: {
     meta: {
@@ -31,6 +33,6 @@ export interface ValidatedRaidbotsData {
     spec: string;
   };
   playerDpsMean: number;
-  profileSets: Array<{ mean: number; id: string }>;
+  profileSets: Array<DropOptimizerResultsItem>;
   droptimizerItems: Array<DropOptimizerItem>;
 }

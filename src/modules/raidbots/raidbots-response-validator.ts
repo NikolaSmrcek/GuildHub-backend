@@ -1,5 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
-import { RaidbotsDataJson, ValidatedRaidbotsData } from './interfaces/raidbots-data.interface';
+import {
+  RaidbotsDataJson,
+  ValidatedRaidbotsData,
+} from './interfaces/dropoptimizer/raidbots-data.interface';
 
 /**
  * Validates a parsed Raidbots /data.json response.

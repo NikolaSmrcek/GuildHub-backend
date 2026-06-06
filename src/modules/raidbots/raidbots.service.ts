@@ -6,9 +6,10 @@ import { RaidbotsReportItem } from './raidbots-report-item.entity';
 import { Character } from '../character/character.entity';
 import { Item } from '../item/item.entity';
 import { CreateRaidbotsReportDto } from './dto/create-raidbots-report.dto';
-import { RaidbotsDataJson } from './interfaces/raidbots-data.interface';
+import { RaidbotsDataJson } from './interfaces/dropoptimizer/raidbots-data.interface';
 import { validateRaidbotsResponse } from './raidbots-response-validator';
 import { GuildHubLogger } from '../../shared/logger';
+import { DifficultyName } from '../difficulty/difficulty.entity';
 
 @Injectable()
 export class RaidbotsService {
@@ -24,6 +25,16 @@ export class RaidbotsService {
     @InjectRepository(Item)
     private readonly itemRepo: Repository<Item>,
   ) {}
+
+  private mapRaidbotsDifficulty(raidbotsDifficulty: string): DifficultyName {
+    const diff = raidbotsDifficulty?.toLowerCase() ?? '';
+    if (diff === 'raid-lfr') return DifficultyName.LFR;
+    if (diff === 'raid-normal') return DifficultyName.NORMAL;
+    if (diff === 'raid-heroic') return DifficultyName.HEROIC;
+    if (diff === 'raid-mythic') return DifficultyName.MYTHIC;
+    // Default fallback
+    return DifficultyName.MYTHIC;
+  }
 
   /**
    * Accept a Raidbots report URL, fetch & analyze the data,
@@ -80,7 +91,7 @@ export class RaidbotsService {
 
     // Determine upgrades: profileset entries with mean > playerDpsMean
     const upgrades: Array<{
-      profilesetId: string;
+      profilesetName: string;
       profilesetMean: number;
       droptimizerName: string;
       matchedItem: Item;
@@ -89,7 +100,7 @@ export class RaidbotsService {
     for (const ps of profileSets) {
       if (ps.mean > playerDpsMean) {
         // Find the matching droptimizer item by id
-        const droptimizerItem = droptimizerItems.find((di) => String(di.id) === String(ps.id));
+        const droptimizerItem = droptimizerItems.find((di) => String(di.name) === String(ps.name));
         if (!droptimizerItem) {
           this.logger.debug('No droptimizer item found.', {
             ...ps,
@@ -97,11 +108,15 @@ export class RaidbotsService {
           continue; // no matching droptimizer item found
         }
 
-        const droptimizerItemDiff = droptimizerItem.name;
+        const droptimizerItemDiff = this.mapRaidbotsDifficulty(droptimizerItem.difficulty);
 
-        // Match our DB item by normalized name (direct query, no full table fetch)
+        // Match our DB item by normalized name and same difficulty
         const matchedItem = await this.itemRepo.findOne({
-          where: { normalizedName: droptimizerItem.name.toLowerCase() },
+          where: {
+            normalizedName: droptimizerItem.name.toLowerCase(),
+            difficulty: { difficulty: droptimizerItemDiff as DifficultyName },
+          },
+          relations: { difficulty: true },
         });
         if (!matchedItem) {
           this.logger.debug('No matching item found.', {
@@ -111,7 +126,7 @@ export class RaidbotsService {
         }
 
         upgrades.push({
-          profilesetId: ps.id,
+          profilesetName: ps.name,
           profilesetMean: ps.mean,
           droptimizerName: droptimizerItem.name,
           matchedItem,
@@ -124,7 +139,8 @@ export class RaidbotsService {
       reportUrl,
       characterId: character.id,
       playerName: player.name,
-      playerClass: player.class ?? null,
+      // TODO fix this
+      playerClass: character.playerClass,
       playerSpec: player.spec ?? null,
       playerDpsMean,
       rawData: data as unknown as object,
