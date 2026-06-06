@@ -66,6 +66,9 @@ export class DatabaseInitService implements OnApplicationBootstrap {
       const migrationFiles = [
         '001_create_expansions_patches.sql',
         '002_create_content_hierarchy.sql',
+        '003_create_accounts_characters_guilds.sql',
+        '004_create_raidbots_reports.sql',
+        '005_add_normalized_name_to_items.sql',
       ];
 
       for (const file of migrationFiles) {

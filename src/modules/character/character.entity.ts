@@ -26,7 +26,7 @@ export class Character {
   @Column({ length: 50 })
   faction!: string;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, name: 'player_class' })
   playerClass!: string;
 
   @Column({ length: 50, nullable: true })
