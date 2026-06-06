@@ -7,6 +7,7 @@
 ## Character
 - `@ManyToOne(() => Account)` → account (FK on account_id, NO cascade — soft-delete only)
 - `@ManyToOne(() => Guild)` → guild (FK on guild_id, nullable, NO cascade)
+- `@OneToMany(() => RaidbotsReport)` → raidbotsReports
 - Fields: name, realm, faction, playerClass, spec, itemLevel, isDeleted (soft-delete)
 
 ## Guild
@@ -40,7 +41,18 @@
 
 ## Item
 - `@ManyToOne(() => Difficulty)` → difficulty
+- `@OneToOne(() => RaidbotsReportItem)` → raidbotsReportItem (FK on raidbots_report_items.item_id)
 - Fields: name, ilvl, slot, class, subclass
+
+## RaidbotsReport
+- `@ManyToOne(() => Character)` → character (FK on character_id)
+- `@OneToMany(() => RaidbotsReportItem)` → reportItems
+- Fields: reportUrl, playerName, playerClass, playerSpec, playerDpsMean, isValid, rawData (JSONB)
+
+## RaidbotsReportItem
+- `@ManyToOne(() => RaidbotsReport)` → report (FK on report_id, ON DELETE CASCADE)
+- `@OneToOne(() => Item)` → item (FK on item_id, UNIQUE — one item per report item)
+- Fields: itemName, playerDpsMean, upgradeDpsMean, dpsImprovement
 
 ## PatchRepository
 - `findAll()` / `findById()` / `findByExpansionId()` include `relations: { expansion: true, season: true }`

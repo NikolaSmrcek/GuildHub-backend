@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { GuildHubLogger } from './shared/logger';
 
 @Injectable()
 export class ConfigService {
+  private readonly logger = new GuildHubLogger(ConfigService.name);
+
   // ── App ──
   get port(): number {
     return Number(process.env.PORT) || 3000;

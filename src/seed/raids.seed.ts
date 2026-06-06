@@ -72,6 +72,7 @@ async function seedRaid(
         await itemRepo.save(
           itemRepo.create({
             name: itemSeed.name,
+            normalizedName: itemSeed.name.toLowerCase(),
             difficultyId: difficulty.id,
             ilvl: itemSeed.ilvl,
             slot: itemSeed.slot,

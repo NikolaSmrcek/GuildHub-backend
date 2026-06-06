@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Account } from '../account/account.entity';
 import { Guild } from '../guild/guild.entity';
+import { RaidbotsReport } from '../raidbots/raidbots-report.entity';
 
 @Entity('characters')
 export class Character {
@@ -46,6 +48,9 @@ export class Character {
   @ManyToOne(() => Guild, (guild) => guild.characters)
   @JoinColumn({ name: 'guild_id' })
   guild!: Guild;
+
+  @OneToMany(() => RaidbotsReport, (report) => report.character)
+  raidbotsReports!: RaidbotsReport[];
 
   @Column({ name: 'is_deleted', type: 'boolean', default: false })
   isDeleted!: boolean;

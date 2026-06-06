@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { readFileSync } from 'fs';
@@ -16,10 +16,11 @@ import { seedSeasons } from './seed/seasons.seed';
 import { seedPatches } from './seed/patches.seed';
 import { seedRaids } from './seed/raids.seed';
 import { ConfigService } from './config.service';
+import { GuildHubLogger } from './shared/logger';
 
 @Injectable()
 export class DatabaseInitService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(DatabaseInitService.name);
+  private readonly logger = new GuildHubLogger(DatabaseInitService.name);
 
   constructor(
     private readonly configService: ConfigService,
@@ -36,13 +37,13 @@ export class DatabaseInitService implements OnApplicationBootstrap {
     if (this.configService.runMigrations) {
       await this.runMigrations();
     } else {
-      this.logger.log('Skipping migrations (RUN_MIGRATIONS=false)');
+      this.logger.info('Skipping migrations (RUN_MIGRATIONS=false)');
     }
 
     if (this.configService.runSeeds) {
       await this.runSeeds();
     } else {
-      this.logger.log('Skipping seeds (RUN_SEEDS=false)');
+      this.logger.info('Skipping seeds (RUN_SEEDS=false)');
     }
   }
 
@@ -57,7 +58,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
 
     try {
       await client.connect();
-      this.logger.log('Connected to database for migrations');
+      this.logger.info('Connected to database for migrations');
 
       // Read and execute migration files in order
       // In dev (ts-node) __dirname is src/, in prod (compiled) it's dist/
@@ -71,9 +72,9 @@ export class DatabaseInitService implements OnApplicationBootstrap {
         const filePath = join(migrationsDir, file);
         try {
           const sql = readFileSync(filePath, 'utf-8');
-          this.logger.log(`Running migration: ${file}`);
+          this.logger.info(`Running migration: ${file}`);
           await client.query(sql);
-          this.logger.log(`✅ Migration ${file} completed`);
+          this.logger.info(`✅ Migration ${file} completed`);
         } catch {
           this.logger.warn(`Migration file ${file} not found, skipping`);
         }
@@ -84,7 +85,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
   }
 
   private async runSeeds(): Promise<void> {
-    this.logger.log('🌱 Seeding expansions...');
+    this.logger.info('🌱 Seeding expansions...');
     await seedExpansions(this.expansionRepo);
 
     // Build expansion lookup for season seeding
@@ -94,13 +95,13 @@ export class DatabaseInitService implements OnApplicationBootstrap {
       expansionIdByShortName[exp.shortName] = exp.id;
     }
 
-    this.logger.log('🌱 Seeding seasons...');
+    this.logger.info('🌱 Seeding seasons...');
     await seedSeasons(this.seasonRepo, expansionIdByShortName);
 
-    this.logger.log('🌱 Seeding patches...');
+    this.logger.info('🌱 Seeding patches...');
     await seedPatches(this.expansionRepo, this.patchRepo, this.seasonRepo);
 
-    this.logger.log('🌱 Seeding raids, bosses, difficulties, items...');
+    this.logger.info('🌱 Seeding raids, bosses, difficulties, items...');
     await seedRaids(
       this.expansionRepo,
       this.raidRepo,
@@ -109,6 +110,6 @@ export class DatabaseInitService implements OnApplicationBootstrap {
       this.itemRepo,
     );
 
-    this.logger.log('✅ Database seeding completed');
+    this.logger.info('✅ Database seeding completed');
   }
 }

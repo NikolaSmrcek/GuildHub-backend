@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { GuildHubLogger } from '../../shared/logger';
 
 @Injectable()
 export class LootService {
+  private readonly logger = new GuildHubLogger(LootService.name);
+
   private items = new Map<string, any>();
 
   createItem(payload: any) {

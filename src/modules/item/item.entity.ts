@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToOne,
   JoinColumn,
 } from 'typeorm';
 import { Difficulty } from '../difficulty/difficulty.entity';
+import { RaidbotsReportItem } from '../raidbots/raidbots-report-item.entity';
 
 @Entity('items')
 export class Item {
@@ -16,6 +18,9 @@ export class Item {
 
   @Column({ length: 255 })
   name!: string;
+
+  @Column({ length: 255, name: 'normalized_name' })
+  normalizedName!: string;
 
   @Column({ name: 'difficulty_id' })
   difficultyId!: string;
@@ -35,6 +40,9 @@ export class Item {
 
   @Column({ length: 100, nullable: true, name: 'subclass' })
   subclass!: string;
+
+  @OneToOne(() => RaidbotsReportItem, (reportItem) => reportItem.item)
+  raidbotsReportItem!: RaidbotsReportItem;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

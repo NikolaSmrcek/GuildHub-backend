@@ -1,10 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ExpansionRepository } from './expansion.repository';
 import { Expansion } from './expansion.entity';
+import { GuildHubLogger } from '../../shared/logger';
 
 @Injectable()
 export class ExpansionService {
-  private readonly logger = new Logger(ExpansionService.name);
+  private readonly logger = new GuildHubLogger(ExpansionService.name);
   private cache: Expansion[] | null = null;
   private latestExpansion: Expansion | null = null;
 
@@ -12,10 +13,10 @@ export class ExpansionService {
 
   async getExpansions(): Promise<Expansion[]> {
     if (this.cache) {
-      this.logger.log('Returning cached expansions');
+      this.logger.info('Returning cached expansions');
       return this.cache;
     }
-    this.logger.log('Fetching expansions from database');
+    this.logger.info('Fetching expansions from database');
     const expansions = await this.repo.findAll();
 
     // sort by releaseDate descending, treat null dates as oldest

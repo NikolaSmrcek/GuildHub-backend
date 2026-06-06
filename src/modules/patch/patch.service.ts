@@ -1,10 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PatchRepository } from './patch.repository';
 import { Patch } from './patch.entity';
+import { GuildHubLogger } from '../../shared/logger';
 
 @Injectable()
 export class PatchService {
-  private readonly logger = new Logger(PatchService.name);
+  private readonly logger = new GuildHubLogger(PatchService.name);
   private cache: Patch[] | null = null;
   /** Cached patches grouped by expansionId, sorted by releaseDate descending. */
   private patchesByExpansion: Map<string, Patch[]> = new Map();
@@ -15,10 +16,10 @@ export class PatchService {
 
   async getPatches(): Promise<Patch[]> {
     if (this.cache) {
-      this.logger.log('Returning cached patches');
+      this.logger.info('Returning cached patches');
       return this.cache;
     }
-    this.logger.log('Fetching patches from database');
+    this.logger.info('Fetching patches from database');
     const patches = await this.repo.findAll();
 
     // Sort all patches by releaseDate descending, treat null dates as oldest

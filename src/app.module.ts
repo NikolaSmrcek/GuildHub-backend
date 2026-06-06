@@ -15,6 +15,7 @@ import { ItemModule } from './modules/item/item.module';
 import { AccountModule } from './modules/account/account.module';
 import { CharacterModule } from './modules/character/character.module';
 import { GuildModule } from './modules/guild/guild.module';
+import { RaidbotsModule } from './modules/raidbots/raidbots.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { GuildModule } from './modules/guild/guild.module';
     AccountModule,
     CharacterModule,
     GuildModule,
+    RaidbotsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, DatabaseInitService],

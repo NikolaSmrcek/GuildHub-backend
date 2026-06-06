@@ -13,7 +13,8 @@ const HEROIC_ILVL = 263;
 const MYTHIC_ILVL = 276;
 
 function diffEntries(items: { name: string; slot: string; class: string; subclass: string }[]) {
-  const map = (ilvl: number) => items.map((i) => ({ ...i, ilvl }));
+  const itemsWithNorm = items.map((i) => ({ ...i, normalizedName: i.name.toLowerCase() }));
+  const map = (ilvl: number) => itemsWithNorm.map((i) => ({ ...i, ilvl }));
   return [
     { difficulty: lfr, items: map(LFR_ILVL) },
     { difficulty: normal, items: map(NORMAL_ILVL) },
