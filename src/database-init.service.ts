@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Client } from 'pg';
@@ -11,10 +11,14 @@ import { Raid } from './modules/raid/raid.entity';
 import { Boss } from './modules/boss/boss.entity';
 import { Difficulty } from './modules/difficulty/difficulty.entity';
 import { Item } from './modules/item/item.entity';
+import { Account } from './modules/account/account.entity';
+import { Guild } from './modules/guild/guild.entity';
+import { Character } from './modules/character/character.entity';
 import { seedExpansions } from './seed/expansions.seed';
 import { seedSeasons } from './seed/seasons.seed';
 import { seedPatches } from './seed/patches.seed';
 import { seedRaids } from './seed/raids.seed';
+import { seedCharacters } from './seed/characters.seed';
 import { ConfigService } from './config.service';
 import { GuildHubLogger } from './shared/logger';
 
@@ -24,6 +28,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly dataSource: DataSource,
     private readonly expansionRepo: ExpansionRepository,
     private readonly patchRepo: PatchRepository,
     @InjectRepository(Season) private readonly seasonRepo: Repository<Season>,
@@ -112,6 +117,12 @@ export class DatabaseInitService implements OnApplicationBootstrap {
       this.difficultyRepo,
       this.itemRepo,
     );
+
+    this.logger.info('🌱 Seeding characters (Aurelora)...');
+    const accountRepo = this.dataSource.getRepository(Account);
+    const guildRepo = this.dataSource.getRepository(Guild);
+    const characterRepo = this.dataSource.getRepository(Character);
+    await seedCharacters(accountRepo, guildRepo, characterRepo);
 
     this.logger.info('✅ Database seeding completed');
   }
