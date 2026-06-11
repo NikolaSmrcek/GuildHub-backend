@@ -6,7 +6,10 @@ import { RaidbotsReportItem } from './raidbots-report-item.entity';
 import { Character } from '../character/character.entity';
 import { Item } from '../item/item.entity';
 import { CreateRaidbotsReportDto } from './dto/create-raidbots-report.dto';
-import { RaidbotsDataJson } from './interfaces/dropoptimizer/raidbots-data.interface';
+import {
+  RaidbotsDataJson,
+  ValidatedRaidbotsData,
+} from './interfaces/dropoptimizer/raidbots-data.interface';
 import { validateRaidbotsResponse } from './raidbots-response-validator';
 import { GuildHubLogger } from '../../shared/logger';
 import { DifficultyName } from '../difficulty/difficulty.entity';
@@ -75,7 +78,7 @@ export class RaidbotsService {
     }
 
     // Validate all critical data points exist in the response
-    const validated = validateRaidbotsResponse(data);
+    const validated: ValidatedRaidbotsData = validateRaidbotsResponse(data);
     const { player, playerDpsMean, profileSets, droptimizerItems } = validated;
 
     // Try to find a matching character by name (case-insensitive)
@@ -100,7 +103,7 @@ export class RaidbotsService {
     for (const ps of profileSets) {
       if (ps.mean > playerDpsMean) {
         // Find the matching droptimizer item by id
-        const droptimizerItem = droptimizerItems.find((di) => String(di.name) === String(ps.name));
+        const droptimizerItem = droptimizerItems.find((di) => String(di.id) === String(ps.name));
         if (!droptimizerItem) {
           this.logger.debug('No droptimizer item found.', {
             ...ps,
@@ -108,12 +111,12 @@ export class RaidbotsService {
           continue; // no matching droptimizer item found
         }
 
-        const droptimizerItemDiff = this.mapRaidbotsDifficulty(droptimizerItem.difficulty);
+        const droptimizerItemDiff = this.mapRaidbotsDifficulty(droptimizerItem.item.difficulty);
 
         // Match our DB item by normalized name and same difficulty
         const matchedItem = await this.itemRepo.findOne({
           where: {
-            normalizedName: droptimizerItem.name.toLowerCase(),
+            normalizedName: droptimizerItem.item.name.toLowerCase(),
             difficulty: { difficulty: droptimizerItemDiff as DifficultyName },
           },
           relations: { difficulty: true },
@@ -128,7 +131,7 @@ export class RaidbotsService {
         upgrades.push({
           profilesetName: ps.name,
           profilesetMean: ps.mean,
-          droptimizerName: droptimizerItem.name,
+          droptimizerName: droptimizerItem.item.name,
           matchedItem,
         });
       }

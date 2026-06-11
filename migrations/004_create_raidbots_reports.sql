@@ -42,4 +42,3 @@ CREATE TABLE IF NOT EXISTS raidbots_report_items (
 
 CREATE INDEX IF NOT EXISTS idx_raidbots_report_items_report_id ON raidbots_report_items(report_id);
 CREATE INDEX IF NOT EXISTS idx_raidbots_report_items_item_id ON raidbots_report_items(item_id);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_raidbots_report_items_item_unique ON raidbots_report_items(item_id);

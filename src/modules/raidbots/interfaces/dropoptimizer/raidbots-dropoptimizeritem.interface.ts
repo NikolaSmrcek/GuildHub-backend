@@ -13,33 +13,37 @@ interface TooltipParams {
 }
 
 export interface DropOptimizerItem {
-  id: number;
-  name: string;
-  icon: string;
-  quality: number;
-  itemClass: number;
-  itemSubClass: number;
-  inventoryType: number;
-  itemLevel: number;
-  stats: Stat[];
-  sources: Source[];
-  expansion: number;
-  baseItemLevel: number;
-  enchant_id: number;
-  tooltipParams: TooltipParams;
-  dropLevel: number;
-  bonus_id: string;
-  bonusLists: number[];
-  gem_id: string;
-  instanceId: number;
-  encounterId: number;
-  difficulty: string;
-  instance: Instance;
-  encounter: Encounter;
-  overrides: Overrides;
-  offSpecItem: boolean;
-  upgrade: Upgrade;
-  socketInfo: any;
+  id: string;
+  slot: string;
+  item: {
+    id: number;
+    name: string;
+    icon: string;
+    quality: number;
+    itemClass: number;
+    itemSubClass: number;
+    inventoryType: number;
+    itemLevel: number;
+    stats: Stat[];
+    sources: Source[];
+    expansion: number;
+    baseItemLevel: number;
+    enchant_id: number;
+    tooltipParams: TooltipParams;
+    dropLevel: number;
+    bonus_id: string;
+    bonusLists: number[];
+    gem_id: string;
+    instanceId: number;
+    encounterId: number;
+    difficulty: string;
+    instance: Instance;
+    encounter: Encounter;
+    overrides: Overrides;
+    offSpecItem: boolean;
+    upgrade: Upgrade;
+    socketInfo: any;
+  };
 }
 
 interface Encounter {
