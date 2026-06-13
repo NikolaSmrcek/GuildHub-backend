@@ -2,3 +2,5 @@
 - raidbots_reports, raw_data is 609kb, do we need it?
 - calculate percentages from the raidbots directly in backend?
 - add unique index to the report id + item id
+- endpoint that gets items of current patch and expansion and raid
+- endpoint to get current expansion and patch
