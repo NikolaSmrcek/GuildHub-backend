@@ -5,10 +5,10 @@ import { GuildHubLogger } from '../../shared/logger';
 export class LootService {
   private readonly logger = new GuildHubLogger(LootService.name);
 
-  private items = new Map<string, any>();
+  private items = new Map<string, Record<string, unknown>>();
 
-  createItem(payload: any) {
-    const id = payload.id || `item-${Date.now()}`;
+  createItem(payload: Record<string, unknown>) {
+    const id = typeof payload.id === 'string' ? payload.id : `item-${Date.now()}`;
     const item = { id, ...payload };
     this.items.set(id, item);
     return item;

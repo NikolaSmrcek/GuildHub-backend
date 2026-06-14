@@ -12,7 +12,23 @@
 
 ## Guild
 - `@OneToMany(() => Character)` → characters
+- `@OneToMany(() => GuildRank)` → ranks (via guildId)
+- `@OneToMany(() => GuildMember)` → members (via guildId)
+- `lootConfig` JSONB column — per-guild section weights for recommendation engine
 - Fields: name, realm, faction, guildType, isDeleted (soft-delete)
+
+## GuildRank
+- `@ManyToOne(() => Guild)` → guild (FK on guild_id, ON DELETE CASCADE)
+- `@OneToMany(() => GuildMember)` → members (via rankId)
+- Unique name per guild (business rule, not a DB unique constraint — enforced by seed idempotency)
+- Fields: name, priority (0-100), defaultLoyalty (0-100)
+
+## GuildMember
+- `@ManyToOne(() => Guild)` → guild (FK on guild_id, ON DELETE CASCADE)
+- `@ManyToOne(() => Character)` → character (FK on character_id, ON DELETE CASCADE)
+- `@ManyToOne(() => GuildRank)` → rank (FK on rank_id, ON DELETE RESTRICT)
+- `UNIQUE(guild_id, character_id)` — one membership record per character per guild
+- Fields: loyaltyOverride (nullable, 0-100), isOnRaidRoster (boolean)
 
 ## Expansion
 - `@OneToMany(() => Patch)` → patches

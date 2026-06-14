@@ -7,6 +7,12 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Character } from '../character/character.entity';
+import { GuildRank } from './guild-rank.entity';
+import { GuildMember } from './guild-member.entity';
+
+export interface LootConfig {
+  sectionWeights: Record<string, number>;
+}
 
 @Entity('guilds')
 export class Guild {
@@ -28,6 +34,9 @@ export class Guild {
   @Column({ name: 'is_deleted', type: 'boolean', default: false })
   isDeleted!: boolean;
 
+  @Column({ name: 'loot_config', type: 'jsonb', nullable: true })
+  lootConfig!: LootConfig | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
@@ -36,4 +45,10 @@ export class Guild {
 
   @OneToMany(() => Character, (character) => character.guild)
   characters!: Character[];
+
+  @OneToMany(() => GuildRank, (rank) => rank.guild)
+  ranks!: GuildRank[];
+
+  @OneToMany(() => GuildMember, (member) => member.guild)
+  members!: GuildMember[];
 }

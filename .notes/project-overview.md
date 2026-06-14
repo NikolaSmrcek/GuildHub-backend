@@ -10,7 +10,14 @@
 - **Migrations**: Raw SQL files in `migrations/` directory
 - **Content modules** (all `@Global()`): ExpansionModule, PatchModule, SeasonModule, RaidModule, BossModule, DifficultyModule, ItemModule
 - **Identity modules** (non-global, export TypeOrmModule): AccountModule, CharacterModule, GuildModule
+- **GuildModule** expanded: registers GuildRank + GuildMember entities, exposes GuildService + GuildController (rank/member/loot-config CRUD)
 - **Loot module** is NOT global — has its own controller (`LootController`) and service (`LootService`)
+- **Recommendation module** (`RecommendationModule`) — modular scoring engine using strategy pattern:
+  - `RecommendationSection` interface with 4 implementations: GearUpgradeSection, RankSection, LoyaltySection, PerformanceSection (mock)
+  - Sections registered via `RECOMMENDATION_SECTION` DI token (factory injection)
+  - `RecommendationSectionRegistry` collects all sections and runs them against each candidate
+  - `RecommendationService` orchestrates eligibility filtering + weighted average scoring
+  - `GET /api/guilds/:guildId/recommendations/items/:itemId`
 - **Circular imports**: TypeORM entities use `() => ClassName` factory pattern; circular deps between Boss ↔ Difficulty ↔ Item are fine at runtime
 
 ## Soft-Delete Pattern
@@ -39,6 +46,9 @@ Raid (belongs to 1 expansion, many-to-many with patches via raid_patches)
 1. `001_create_expansions_patches.sql` — expansions + patches
 2. `002_create_content_hierarchy.sql` — seasons, raids, bosses, difficulties, items
 3. `003_create_accounts_characters_guilds.sql` — accounts, characters, guilds (soft-delete)
+4. `004_create_raidbots_reports.sql` — raidbots_reports + raidbots_report_items
+5. `005_add_normalized_name_to_items.sql` — normalized_name column on items
+6. `006_create_guild_ranks_members.sql` — guild_ranks, guild_members tables + loot_config JSONB on guilds
 
 ## Key Design Decisions
 - **Raid** = instance definition (Voidspire); **RaidEvent** = a guild's run of a raid
@@ -47,3 +57,8 @@ Raid (belongs to 1 expansion, many-to-many with patches via raid_patches)
 - LootRequest `raidId` → `raidEventId` in updated schema
 - DistributionRecord `raidId` → `raidEventId`
 - Council votes are immutable: UNIQUE(council_id, voter_id) prevents duplicate votes
+- **Recommendation scoring**: weighted average formula — `totalScore = Σ(secScore × weight) / Σ(weight)`. Weights configurable per guild via `lootConfig` JSONB.
+- **Modular sections**: Each scoring section implements `RecommendationSection` interface. Registered via DI token `RECOMMENDATION_SECTION` (factory pattern). Adding a 5th section = one new class + inject in factory.
+- **Eligibility gates**: Candidate must be on guild's raid roster (`isOnRaidRoster=true`) AND have a Raidbots report showing `dpsImprovement > 0` for the item.
+- **GuildRank DELETE restricted**: GuildMember references rank with `ON DELETE RESTRICT` — ranks with assigned members can't be deleted.
+- **Plan documentation**: Feature plans stored in `plan/<feature-name>/` — `plan/loot-recommendation/` contains plan, formula, data model, and API spec for the recommendation engine.

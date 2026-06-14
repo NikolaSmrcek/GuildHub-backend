@@ -42,7 +42,7 @@ export interface DropOptimizerItem {
     overrides: Overrides;
     offSpecItem: boolean;
     upgrade: Upgrade;
-    socketInfo: any;
+    socketInfo: Record<string, unknown>;
   };
 }
 

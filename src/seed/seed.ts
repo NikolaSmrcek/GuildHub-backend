@@ -12,12 +12,20 @@ import { Difficulty } from '../modules/difficulty/difficulty.entity';
 import { Account } from '../modules/account/account.entity';
 import { Guild } from '../modules/guild/guild.entity';
 import { Character } from '../modules/character/character.entity';
+import { GuildRank } from '../modules/guild/guild-rank.entity';
+import { GuildMember } from '../modules/guild/guild-member.entity';
+import { RaidbotsReport } from '../modules/raidbots/raidbots-report.entity';
+import { RaidbotsReportItem } from '../modules/raidbots/raidbots-report-item.entity';
 import { Item } from '../modules/item/item.entity';
 import { seedExpansions } from './expansions.seed';
 import { seedSeasons } from './seasons.seed';
 import { seedPatches } from './patches.seed';
 import { seedRaids } from './raids.seed';
 import { seedCharacters } from './characters.seed';
+import { seedMoreCharacters } from './more-characters.seed';
+import { seedGuildRanks } from './guild-ranks.seed';
+import { seedGuildMembers } from './guild-members.seed';
+import { seedRaidbotsReports } from './raidbots-reports.seed';
 
 async function bootstrapSeed() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
@@ -31,6 +39,10 @@ async function bootstrapSeed() {
   const accountRepo = app.get(getRepositoryToken(Account));
   const guildRepo = app.get(getRepositoryToken(Guild));
   const characterRepo = app.get(getRepositoryToken(Character));
+  const rankRepo = app.get(getRepositoryToken(GuildRank));
+  const memberRepo = app.get(getRepositoryToken(GuildMember));
+  const reportRepo = app.get(getRepositoryToken(RaidbotsReport));
+  const reportItemRepo = app.get(getRepositoryToken(RaidbotsReportItem));
 
   console.log('🌱 Seeding expansions...');
   await seedExpansions(expansionRepo);
@@ -52,6 +64,18 @@ async function bootstrapSeed() {
 
   console.log('🌱 Seeding characters (Aurelora)...');
   await seedCharacters(accountRepo, guildRepo, characterRepo);
+
+  console.log('🌱 Seeding additional test characters...');
+  await seedMoreCharacters(accountRepo, guildRepo, characterRepo);
+
+  console.log('🌱 Seeding guild ranks...');
+  await seedGuildRanks(guildRepo, rankRepo);
+
+  console.log('🌱 Seeding guild members...');
+  await seedGuildMembers(guildRepo, rankRepo, characterRepo, memberRepo);
+
+  console.log('🌱 Seeding simulated Raidbots reports...');
+  await seedRaidbotsReports(characterRepo, itemRepo, reportRepo, reportItemRepo);
 
   await app.close();
   console.log('✅ Seeding completed successfully.');

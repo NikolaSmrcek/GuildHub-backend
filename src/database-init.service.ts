@@ -14,11 +14,19 @@ import { Item } from './modules/item/item.entity';
 import { Account } from './modules/account/account.entity';
 import { Guild } from './modules/guild/guild.entity';
 import { Character } from './modules/character/character.entity';
+import { GuildRank } from './modules/guild/guild-rank.entity';
+import { GuildMember } from './modules/guild/guild-member.entity';
+import { RaidbotsReport } from './modules/raidbots/raidbots-report.entity';
+import { RaidbotsReportItem } from './modules/raidbots/raidbots-report-item.entity';
 import { seedExpansions } from './seed/expansions.seed';
 import { seedSeasons } from './seed/seasons.seed';
 import { seedPatches } from './seed/patches.seed';
 import { seedRaids } from './seed/raids.seed';
 import { seedCharacters } from './seed/characters.seed';
+import { seedMoreCharacters } from './seed/more-characters.seed';
+import { seedGuildRanks } from './seed/guild-ranks.seed';
+import { seedGuildMembers } from './seed/guild-members.seed';
+import { seedRaidbotsReports } from './seed/raidbots-reports.seed';
 import { ConfigService } from './config.service';
 import { GuildHubLogger } from './shared/logger';
 
@@ -74,6 +82,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
         '003_create_accounts_characters_guilds.sql',
         '004_create_raidbots_reports.sql',
         '005_add_normalized_name_to_items.sql',
+        '006_create_guild_ranks_members.sql',
       ];
 
       for (const file of migrationFiles) {
@@ -123,6 +132,22 @@ export class DatabaseInitService implements OnApplicationBootstrap {
     const guildRepo = this.dataSource.getRepository(Guild);
     const characterRepo = this.dataSource.getRepository(Character);
     await seedCharacters(accountRepo, guildRepo, characterRepo);
+
+    this.logger.info('🌱 Seeding additional test characters...');
+    await seedMoreCharacters(accountRepo, guildRepo, characterRepo);
+
+    this.logger.info('🌱 Seeding guild ranks...');
+    const rankRepo = this.dataSource.getRepository(GuildRank);
+    await seedGuildRanks(guildRepo, rankRepo);
+
+    this.logger.info('🌱 Seeding guild members...');
+    const memberRepo = this.dataSource.getRepository(GuildMember);
+    await seedGuildMembers(guildRepo, rankRepo, characterRepo, memberRepo);
+
+    this.logger.info('🌱 Seeding simulated Raidbots reports...');
+    const reportRepo = this.dataSource.getRepository(RaidbotsReport);
+    const reportItemRepo = this.dataSource.getRepository(RaidbotsReportItem);
+    await seedRaidbotsReports(characterRepo, this.itemRepo, reportRepo, reportItemRepo);
 
     this.logger.info('✅ Database seeding completed');
   }

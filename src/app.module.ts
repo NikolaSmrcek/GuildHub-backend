@@ -16,6 +16,8 @@ import { AccountModule } from './modules/account/account.module';
 import { CharacterModule } from './modules/character/character.module';
 import { GuildModule } from './modules/guild/guild.module';
 import { RaidbotsModule } from './modules/raidbots/raidbots.module';
+import { LootModule } from './modules/loot/loot.module';
+import { RecommendationModule } from './modules/recommendation/recommendation.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { RaidbotsModule } from './modules/raidbots/raidbots.module';
     CharacterModule,
     GuildModule,
     RaidbotsModule,
+    LootModule,
+    RecommendationModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, DatabaseInitService],
