@@ -102,6 +102,34 @@ export class DatabaseInitService implements OnApplicationBootstrap {
   }
 
   private async runSeeds(): Promise<void> {
+    // Clear all seeded tables (reverse dependency order) so seeds always start fresh
+    this.logger.info('🗑️ Clearing existing seed data...');
+    const queryRunner = this.dataSource.createQueryRunner();
+    try {
+      await queryRunner.query(`
+        TRUNCATE TABLE
+          raidbots_report_items,
+          raidbots_reports,
+          guild_members,
+          guild_ranks,
+          characters,
+          accounts,
+          guilds,
+          items,
+          difficulties,
+          bosses,
+          raids,
+          raid_patches,
+          patches,
+          seasons,
+          expansions
+        RESTART IDENTITY CASCADE;
+      `);
+      this.logger.info('✅ Seed data cleared');
+    } finally {
+      await queryRunner.release();
+    }
+
     this.logger.info('🌱 Seeding expansions...');
     await seedExpansions(this.expansionRepo);
 

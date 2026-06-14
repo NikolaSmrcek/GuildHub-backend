@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from '../app.module';
+import { DataSource } from 'typeorm';
 import { ExpansionRepository } from '../modules/expansion/expansion.repository';
 import { PatchRepository } from '../modules/patch/patch.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -29,6 +30,7 @@ import { seedRaidbotsReports } from './raidbots-reports.seed';
 
 async function bootstrapSeed() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  const dataSource = app.get(DataSource);
   const expansionRepo = app.get(ExpansionRepository);
   const patchRepo = app.get(PatchRepository);
   const seasonRepo = app.get(getRepositoryToken(Season));
@@ -43,6 +45,34 @@ async function bootstrapSeed() {
   const memberRepo = app.get(getRepositoryToken(GuildMember));
   const reportRepo = app.get(getRepositoryToken(RaidbotsReport));
   const reportItemRepo = app.get(getRepositoryToken(RaidbotsReportItem));
+
+  // ── Clear all seeded tables (reverse dependency order) ─────
+  console.log('🗑️ Clearing existing seed data...');
+  const queryRunner = dataSource.createQueryRunner();
+  try {
+    await queryRunner.query(`
+      TRUNCATE TABLE
+        raidbots_report_items,
+        raidbots_reports,
+        guild_members,
+        guild_ranks,
+        characters,
+        accounts,
+        guilds,
+        items,
+        difficulties,
+        bosses,
+        raids,
+        raid_patches,
+        patches,
+        seasons,
+        expansions
+      RESTART IDENTITY CASCADE;
+    `);
+    console.log('✅ Seed data cleared');
+  } finally {
+    await queryRunner.release();
+  }
 
   console.log('🌱 Seeding expansions...');
   await seedExpansions(expansionRepo);
