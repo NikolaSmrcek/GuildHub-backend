@@ -11,6 +11,8 @@ import {
 import { Account } from '../account/account.entity';
 import { Guild } from '../guild/guild.entity';
 import { RaidbotsReport } from '../raidbots/raidbots-report.entity';
+import { Race } from './race.entity';
+import { Spec } from './spec.entity';
 
 @Entity('characters')
 export class Character {
@@ -26,11 +28,25 @@ export class Character {
   @Column({ length: 50 })
   faction!: string;
 
+  // ── Race (FK → races.id) ──────────────────────────────────
+  @Column({ name: 'race_id', nullable: true })
+  raceId!: string;
+
+  @ManyToOne(() => Race, { nullable: true })
+  @JoinColumn({ name: 'race_id' })
+  race?: Race;
+
+  // ── Player Class (FK → class_armor.class_name) ────────────
   @Column({ length: 50, nullable: true, name: 'player_class' })
   playerClass!: string;
 
-  @Column({ length: 50, nullable: true })
-  spec!: string;
+  // ── Spec (FK → specs.id) ──────────────────────────────────
+  @Column({ name: 'spec_id', nullable: true })
+  specId!: string;
+
+  @ManyToOne(() => Spec, { nullable: true })
+  @JoinColumn({ name: 'spec_id' })
+  spec?: Spec;
 
   @Column({ name: 'item_level', type: 'integer', nullable: true })
   itemLevel!: number;

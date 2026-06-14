@@ -150,7 +150,7 @@ export class RecommendationService {
         characterName: character.name,
         accountDisplayName: '', // TODO: join with account
         playerClass: character.playerClass,
-        spec: character.spec,
+        spec: character.spec?.specName ?? null,
         rankName: member.rank?.name ?? 'Unknown',
         totalScore,
         sectionScores: sectionScoresDetail,

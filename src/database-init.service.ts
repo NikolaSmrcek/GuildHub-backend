@@ -18,10 +18,16 @@ import { GuildRank } from './modules/guild/guild-rank.entity';
 import { GuildMember } from './modules/guild/guild-member.entity';
 import { RaidbotsReport } from './modules/raidbots/raidbots-report.entity';
 import { RaidbotsReportItem } from './modules/raidbots/raidbots-report-item.entity';
+import { Race } from './modules/character/race.entity';
+import { RaceClass } from './modules/character/race-class.entity';
+import { Spec } from './modules/character/spec.entity';
+import { ClassSpec } from './modules/character/class-spec.entity';
+import { ClassArmor } from './modules/character/class-armor.entity';
 import { seedExpansions } from './seed/expansions.seed';
 import { seedSeasons } from './seed/seasons.seed';
 import { seedPatches } from './seed/patches.seed';
 import { seedRaids } from './seed/raids.seed';
+import { seedRaceReference } from './seed/race-reference.seed';
 import { seedCharacters } from './seed/characters.seed';
 import { seedMoreCharacters } from './seed/more-characters.seed';
 import { seedGuildRanks } from './seed/guild-ranks.seed';
@@ -83,6 +89,8 @@ export class DatabaseInitService implements OnApplicationBootstrap {
         '004_create_raidbots_reports.sql',
         '005_add_normalized_name_to_items.sql',
         '006_create_guild_ranks_members.sql',
+        '007_create_race_class_reference.sql',
+        '008_character_fk_columns.sql',
       ];
 
       for (const file of migrationFiles) {
@@ -115,6 +123,10 @@ export class DatabaseInitService implements OnApplicationBootstrap {
           characters,
           accounts,
           guilds,
+          class_armor,
+          class_specs,
+          race_classes,
+          races,
           items,
           difficulties,
           bosses,
@@ -122,6 +134,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
           raid_patches,
           patches,
           seasons,
+          specs,
           expansions
         RESTART IDENTITY CASCADE;
       `);
@@ -155,6 +168,13 @@ export class DatabaseInitService implements OnApplicationBootstrap {
       this.itemRepo,
     );
 
+    this.logger.info('🌱 Seeding race/class/spec/armor reference data...');
+    const raceRepo = this.dataSource.getRepository(Race);
+    const raceClassRepo = this.dataSource.getRepository(RaceClass);
+    const classSpecRepo = this.dataSource.getRepository(ClassSpec);
+    const classArmorRepo = this.dataSource.getRepository(ClassArmor);
+    await seedRaceReference(raceRepo, raceClassRepo, classSpecRepo, classArmorRepo);
+
     this.logger.info('🌱 Seeding characters (Aurelora)...');
     const accountRepo = this.dataSource.getRepository(Account);
     const guildRepo = this.dataSource.getRepository(Guild);
@@ -162,7 +182,8 @@ export class DatabaseInitService implements OnApplicationBootstrap {
     await seedCharacters(accountRepo, guildRepo, characterRepo);
 
     this.logger.info('🌱 Seeding additional test characters...');
-    await seedMoreCharacters(accountRepo, guildRepo, characterRepo);
+    const specRepo = this.dataSource.getRepository(Spec);
+    await seedMoreCharacters(accountRepo, guildRepo, characterRepo, raceRepo, specRepo);
 
     this.logger.info('🌱 Seeding guild ranks...');
     const rankRepo = this.dataSource.getRepository(GuildRank);

@@ -13,6 +13,7 @@ import {
 import { validateRaidbotsResponse } from './raidbots-response-validator';
 import { GuildHubLogger } from '../../shared/logger';
 import { DifficultyName } from '../difficulty/difficulty.entity';
+import { ValidationService } from '../validation/validation.service';
 
 @Injectable()
 export class RaidbotsService {
@@ -27,6 +28,7 @@ export class RaidbotsService {
     private readonly characterRepo: Repository<Character>,
     @InjectRepository(Item)
     private readonly itemRepo: Repository<Item>,
+    private readonly validationService: ValidationService,
   ) {}
 
   private mapRaidbotsDifficulty(raidbotsDifficulty: string): DifficultyName {
@@ -126,6 +128,19 @@ export class RaidbotsService {
             ...droptimizerItem,
           });
           continue; // item not in our database
+        }
+
+        // Armor type validation: skip items whose armor type doesn't match character class
+        if (
+          !this.validationService.validateClassArmor(character.playerClass, matchedItem.subclass)
+        ) {
+          this.logger.debug('Armor type mismatch — skipping item', {
+            character: character.name,
+            class: character.playerClass,
+            item: matchedItem.name,
+            itemSubclass: matchedItem.subclass,
+          });
+          continue;
         }
 
         upgrades.push({

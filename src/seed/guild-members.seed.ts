@@ -12,18 +12,31 @@ interface MemberSeedEntry {
 }
 
 const members: MemberSeedEntry[] = [
+  // ── Cloth (3 on roster, 1 off) ────────────────────────────
+  { characterName: 'Valena', rankName: 'Core Raider', loyaltyOverride: 80, isOnRaidRoster: true },
+  { characterName: 'Arya', rankName: 'Trial', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Mordris', rankName: 'Raider', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Lyria', rankName: 'Social', loyaltyOverride: null, isOnRaidRoster: false },
+  // ── Leather (3 on roster, 1 off) ──────────────────────────
+  { characterName: 'Seris', rankName: 'Trial', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Korvax', rankName: 'Core Raider', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Thenia', rankName: 'Raider', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Elara', rankName: 'Social', loyaltyOverride: null, isOnRaidRoster: false },
+  // ── Mail (3 on roster, 1 off) ─────────────────────────────
+  { characterName: 'Lorien', rankName: 'Raider', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Nyssa', rankName: 'Core Raider', loyaltyOverride: 90, isOnRaidRoster: true },
+  { characterName: 'Thrak', rankName: 'Trial', loyaltyOverride: null, isOnRaidRoster: true },
+  { characterName: 'Raszag', rankName: 'Social', loyaltyOverride: null, isOnRaidRoster: false },
+  // ── Plate (3 on roster, 1 off) ────────────────────────────
   {
     characterName: 'Aurelora',
     rankName: 'Core Raider',
     loyaltyOverride: null,
     isOnRaidRoster: true,
   },
-  { characterName: 'Valena', rankName: 'Core Raider', loyaltyOverride: 80, isOnRaidRoster: true },
   { characterName: 'Brox', rankName: 'Raider', loyaltyOverride: null, isOnRaidRoster: true },
   { characterName: 'Joren', rankName: 'Raider', loyaltyOverride: null, isOnRaidRoster: true },
-  { characterName: 'Arya', rankName: 'Trial', loyaltyOverride: null, isOnRaidRoster: true },
-  { characterName: 'Seris', rankName: 'Trial', loyaltyOverride: null, isOnRaidRoster: false },
-  { characterName: 'Lorien', rankName: 'Social', loyaltyOverride: null, isOnRaidRoster: false },
+  { characterName: 'Saelara', rankName: 'Social', loyaltyOverride: null, isOnRaidRoster: false },
 ];
 
 /**

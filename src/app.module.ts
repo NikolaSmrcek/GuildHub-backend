@@ -17,6 +17,7 @@ import { CharacterModule } from './modules/character/character.module';
 import { GuildModule } from './modules/guild/guild.module';
 import { RaidbotsModule } from './modules/raidbots/raidbots.module';
 import { LootModule } from './modules/loot/loot.module';
+import { ValidationModule } from './modules/validation/validation.module';
 import { RecommendationModule } from './modules/recommendation/recommendation.module';
 
 @Module({
@@ -47,6 +48,7 @@ import { RecommendationModule } from './modules/recommendation/recommendation.mo
     GuildModule,
     RaidbotsModule,
     LootModule,
+    ValidationModule,
     RecommendationModule,
   ],
   controllers: [AppController],

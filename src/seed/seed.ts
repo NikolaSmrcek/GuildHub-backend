@@ -18,6 +18,8 @@ import { GuildMember } from '../modules/guild/guild-member.entity';
 import { RaidbotsReport } from '../modules/raidbots/raidbots-report.entity';
 import { RaidbotsReportItem } from '../modules/raidbots/raidbots-report-item.entity';
 import { Item } from '../modules/item/item.entity';
+import { Race } from '../modules/character/race.entity';
+import { Spec } from '../modules/character/spec.entity';
 import { seedExpansions } from './expansions.seed';
 import { seedSeasons } from './seasons.seed';
 import { seedPatches } from './patches.seed';
@@ -45,6 +47,8 @@ async function bootstrapSeed() {
   const memberRepo = app.get(getRepositoryToken(GuildMember));
   const reportRepo = app.get(getRepositoryToken(RaidbotsReport));
   const reportItemRepo = app.get(getRepositoryToken(RaidbotsReportItem));
+  const raceRepo = app.get(getRepositoryToken(Race));
+  const specRepo = app.get(getRepositoryToken(Spec));
 
   // ── Clear all seeded tables (reverse dependency order) ─────
   console.log('🗑️ Clearing existing seed data...');
@@ -59,6 +63,11 @@ async function bootstrapSeed() {
         characters,
         accounts,
         guilds,
+        class_armor,
+        class_specs,
+        race_classes,
+        races,
+        specs,
         items,
         difficulties,
         bosses,
@@ -96,7 +105,7 @@ async function bootstrapSeed() {
   await seedCharacters(accountRepo, guildRepo, characterRepo);
 
   console.log('🌱 Seeding additional test characters...');
-  await seedMoreCharacters(accountRepo, guildRepo, characterRepo);
+  await seedMoreCharacters(accountRepo, guildRepo, characterRepo, raceRepo, specRepo);
 
   console.log('🌱 Seeding guild ranks...');
   await seedGuildRanks(guildRepo, rankRepo);
