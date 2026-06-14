@@ -61,7 +61,9 @@ export class RecommendationService {
     const rosterMembers = await this.guildMemberRepo.find({
       where: { guildId, isOnRaidRoster: true },
       relations: {
-        character: true,
+        character: {
+          spec: true,
+        },
         rank: true,
       },
     });

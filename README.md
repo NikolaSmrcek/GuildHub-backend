@@ -27,6 +27,17 @@ cp .env.example .env
 # then edit .env with real values
 ```
 
+API Documentation (Swagger)
+---------------------------
+
+When the server is running, Swagger UI is available at:
+
+```
+http://localhost:3000/api/docs
+```
+
+The OpenAPI spec is auto-generated from NestJS decorators (`@ApiTags`, `@ApiOperation`, `@ApiBearerAuth`, etc.) using `@nestjs/swagger`. The document is built in `src/main.ts` with the `DocumentBuilder`.
+
 Development
 -----------
 

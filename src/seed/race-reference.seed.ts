@@ -3,6 +3,8 @@ import { Race } from '../modules/character/race.entity';
 import { RaceClass } from '../modules/character/race-class.entity';
 import { ClassSpec } from '../modules/character/class-spec.entity';
 import { ClassArmor } from '../modules/character/class-armor.entity';
+import { Spec } from '../modules/character/spec.entity';
+import { ArmorSubclass } from '../modules/character/armor-subclass.entity';
 
 /**
  * Seed all race/class/spec/armor reference data.
@@ -278,6 +280,8 @@ export async function seedRaceReference(
   raceClassRepo: Repository<RaceClass>,
   classSpecRepo: Repository<ClassSpec>,
   classArmorRepo: Repository<ClassArmor>,
+  specRepo: Repository<Spec>,
+  armorSubclassRepo: Repository<ArmorSubclass>,
 ): Promise<void> {
   // 1. Seed races
   const raceByNameFaction = new Map<string, Race>();
@@ -320,9 +324,22 @@ export async function seedRaceReference(
   }
   console.log(`  ✓ Seeded ${classSpecs.length} class ↔ spec entries`);
 
-  // 4. Seed class armor
+  // 4. Seed armor subclasses (lookup table — must precede class_armor due to FK)
+  const armorSubclassNames = new Set(classArmor.map((ca) => ca.armorSubclass));
+  for (const name of armorSubclassNames) {
+    await armorSubclassRepo.save(armorSubclassRepo.create({ name }));
+  }
+  console.log(`  ✓ Seeded ${armorSubclassNames.size} armor subclass entries`);
+
+  // 5. Seed class armor (FK → armor_subclasses)
   for (const ca of classArmor) {
     await classArmorRepo.save(classArmorRepo.create(ca));
   }
   console.log(`  ✓ Seeded ${classArmor.length} class ↔ armor entries`);
+
+  // 6. Seed specs (denormalized from class_specs for FK convenience)
+  for (const cs of classSpecs) {
+    await specRepo.save(specRepo.create(cs));
+  }
+  console.log(`  ✓ Seeded ${classSpecs.length} spec entries`);
 }

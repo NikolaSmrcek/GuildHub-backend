@@ -7,8 +7,42 @@
 ## Character
 - `@ManyToOne(() => Account)` → account (FK on account_id, NO cascade — soft-delete only)
 - `@ManyToOne(() => Guild)` → guild (FK on guild_id, nullable, NO cascade)
+- `@ManyToOne(() => Race)` → race (FK on race_id, nullable, added in migration 008)
+- `@ManyToOne(() => Spec)` → spec (FK on spec_id, nullable, added in migration 008)
 - `@OneToMany(() => RaidbotsReport)` → raidbotsReports
-- Fields: name, realm, faction, playerClass, spec, itemLevel, isDeleted (soft-delete)
+- `playerClass` VARCHAR — FK → class_armor(class_name) via `fk_characters_player_class` (migration 008, NOT VALID)
+- Fields: name, realm, faction, playerClass, itemLevel, isDeleted (soft-delete)
+
+## Race
+- `@OneToMany(() => RaceClass)` → raceClasses via race_id
+- `@OneToMany(() => Character)` (via race_id FK on characters)
+- Fields: name, faction — `UNIQUE(name, faction)` allows dual-faction races (Dracthyr, Pandaren, Earthen)
+
+## RaceClass
+- `@ManyToOne(() => Race)` → race (FK on race_id, ON DELETE CASCADE)
+- `@Unique(['raceId', 'className'])` — one combination per race
+- Fields: raceId, className
+
+## ClassSpec
+- `@Unique(['className', 'specName'])` — one spec per class
+- Fields: className, specName
+
+## ClassArmor
+- `@ManyToOne(() => ArmorSubclass)` → armorSubclass (FK on armor_subclass, added in migration 009)
+- `@Unique(['className'])` — one armor type per class
+- Fields: className, armorSubclass
+
+## ArmorSubclass
+- Lookup table seeded with 4 fixed values: Cloth, Leather, Mail, Plate
+- `@OneToMany(() => ClassArmor)` (via armor_subclass FK on class_armor)
+- Fields: name (PK)
+
+## Spec
+- Denormalized from ClassSpec so characters can FK to a single ID
+- `@Unique(['className', 'specName'])`
+- `@ManyToOne(() => ClassArmor)` via FK (class_name) → class_armor(class_name)
+- Fields: className, specName
+- Populated by migration 008 INSERT FROM class_specs, re-seeded in seed step 6
 
 ## Guild
 - `@OneToMany(() => Character)` → characters

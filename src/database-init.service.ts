@@ -23,6 +23,7 @@ import { RaceClass } from './modules/character/race-class.entity';
 import { Spec } from './modules/character/spec.entity';
 import { ClassSpec } from './modules/character/class-spec.entity';
 import { ClassArmor } from './modules/character/class-armor.entity';
+import { ArmorSubclass } from './modules/character/armor-subclass.entity';
 import { seedExpansions } from './seed/expansions.seed';
 import { seedSeasons } from './seed/seasons.seed';
 import { seedPatches } from './seed/patches.seed';
@@ -91,6 +92,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
         '006_create_guild_ranks_members.sql',
         '007_create_race_class_reference.sql',
         '008_character_fk_columns.sql',
+        '009_create_armor_subclasses.sql',
       ];
 
       for (const file of migrationFiles) {
@@ -100,8 +102,14 @@ export class DatabaseInitService implements OnApplicationBootstrap {
           this.logger.info(`Running migration: ${file}`);
           await client.query(sql);
           this.logger.info(`✅ Migration ${file} completed`);
-        } catch {
-          this.logger.warn(`Migration file ${file} not found, skipping`);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+          if (err.code === 'ENOENT') {
+            this.logger.warn(`Migration file ${file} not found, skipping`);
+          } else {
+            this.logger.error(`Migration ${file} failed: ${err.message}`);
+            throw err;
+          }
         }
       }
     } finally {
@@ -124,6 +132,7 @@ export class DatabaseInitService implements OnApplicationBootstrap {
           accounts,
           guilds,
           class_armor,
+          armor_subclasses,
           class_specs,
           race_classes,
           races,
@@ -173,7 +182,16 @@ export class DatabaseInitService implements OnApplicationBootstrap {
     const raceClassRepo = this.dataSource.getRepository(RaceClass);
     const classSpecRepo = this.dataSource.getRepository(ClassSpec);
     const classArmorRepo = this.dataSource.getRepository(ClassArmor);
-    await seedRaceReference(raceRepo, raceClassRepo, classSpecRepo, classArmorRepo);
+    const specRepo = this.dataSource.getRepository(Spec);
+    const armorSubclassRepo = this.dataSource.getRepository(ArmorSubclass);
+    await seedRaceReference(
+      raceRepo,
+      raceClassRepo,
+      classSpecRepo,
+      classArmorRepo,
+      specRepo,
+      armorSubclassRepo,
+    );
 
     this.logger.info('🌱 Seeding characters (Aurelora)...');
     const accountRepo = this.dataSource.getRepository(Account);
@@ -182,7 +200,6 @@ export class DatabaseInitService implements OnApplicationBootstrap {
     await seedCharacters(accountRepo, guildRepo, characterRepo);
 
     this.logger.info('🌱 Seeding additional test characters...');
-    const specRepo = this.dataSource.getRepository(Spec);
     await seedMoreCharacters(accountRepo, guildRepo, characterRepo, raceRepo, specRepo);
 
     this.logger.info('🌱 Seeding guild ranks...');

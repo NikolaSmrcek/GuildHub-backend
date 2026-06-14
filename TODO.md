@@ -4,3 +4,5 @@
 - add unique index to the report id + item id
 - endpoint that gets items of current patch and expansion and raid
 - endpoint to get current expansion and patch
+- clean up raidbots report, we need to have foreign key to player spec, do we need player name?
+- check all entities and their relations

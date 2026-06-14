@@ -31,6 +31,13 @@ export class ValidationService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    // Deliberately deferred: loadMaps() is called on first use via ensureLoaded().
+    // This avoids a race condition with DatabaseInitService (which creates the tables
+    // and seeds the reference data during its own onApplicationBootstrap).
+  }
+
+  private async ensureLoaded(): Promise<void> {
+    if (this.loaded) return;
     await this.loadMaps();
   }
 
@@ -51,7 +58,8 @@ export class ValidationService implements OnApplicationBootstrap {
     }
   }
 
-  validateRaceClass(race: string, className: string): boolean {
+  async validateRaceClass(race: string, className: string): Promise<boolean> {
+    await this.ensureLoaded();
     if (race === 'Dracthyr') {
       // Dracthyr exists as two rows (Alliance + Horde) — merge their class sets
       const alliance = this.raceClassMap.get('Dracthyr') ?? new Set();
@@ -73,7 +81,8 @@ export class ValidationService implements OnApplicationBootstrap {
     }
   }
 
-  validateClassSpec(className: string, spec: string): boolean {
+  async validateClassSpec(className: string, spec: string): Promise<boolean> {
+    await this.ensureLoaded();
     const specsForClass = this.classSpecMap.get(className);
     return specsForClass?.has(spec) ?? false;
   }
@@ -88,12 +97,9 @@ export class ValidationService implements OnApplicationBootstrap {
     }
   }
 
-  validateClassArmor(className: string, armorSubclass: string): boolean {
+  async validateClassArmor(className: string, armorSubclass: string): Promise<boolean> {
+    await this.ensureLoaded();
     // Non-armor items (weapons, trinkets, etc.) pass through
-    if (!this.armorSubclasses.has(armorSubclass)) {
-      return true;
-    }
-    // Tier tokens and other special subclasses pass through
     if (!this.armorSubclasses.has(armorSubclass)) {
       return true;
     }
@@ -103,16 +109,20 @@ export class ValidationService implements OnApplicationBootstrap {
 
   // ──── Composite ────────────────────────────────────────
 
-  validateCharacterCombination(race: string, className: string, spec: string): ValidationResult {
+  async validateCharacterCombination(
+    race: string,
+    className: string,
+    spec: string,
+  ): Promise<ValidationResult> {
     const errors: string[] = [];
 
     if (!race) {
       errors.push('Race is required');
-    } else if (!this.validateRaceClass(race, className)) {
+    } else if (!(await this.validateRaceClass(race, className))) {
       errors.push(`Race "${race}" cannot be class "${className}"`);
     }
 
-    if (className && spec && !this.validateClassSpec(className, spec)) {
+    if (className && spec && !(await this.validateClassSpec(className, spec))) {
       errors.push(`Class "${className}" has no spec "${spec}"`);
     }
 

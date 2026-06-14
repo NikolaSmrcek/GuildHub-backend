@@ -49,6 +49,9 @@ Raid (belongs to 1 expansion, many-to-many with patches via raid_patches)
 4. `004_create_raidbots_reports.sql` — raidbots_reports + raidbots_report_items
 5. `005_add_normalized_name_to_items.sql` — normalized_name column on items
 6. `006_create_guild_ranks_members.sql` — guild_ranks, guild_members tables + loot_config JSONB on guilds
+7. `007_create_race_class_reference.sql` — races, race_classes, class_specs, class_armor tables
+8. `008_character_fk_columns.sql` — specs table, FK columns (race_id, spec_id) on characters, FK on player_class
+9. `009_create_armor_subclasses.sql` — armor_subclasses lookup table, FK from class_armor.armor_subclass
 
 ## Key Design Decisions
 - **Raid** = instance definition (Voidspire); **RaidEvent** = a guild's run of a raid
@@ -62,3 +65,8 @@ Raid (belongs to 1 expansion, many-to-many with patches via raid_patches)
 - **Eligibility gates**: Candidate must be on guild's raid roster (`isOnRaidRoster=true`) AND have a Raidbots report showing `dpsImprovement > 0` for the item.
 - **GuildRank DELETE restricted**: GuildMember references rank with `ON DELETE RESTRICT` — ranks with assigned members can't be deleted.
 - **Plan documentation**: Feature plans stored in `plan/<feature-name>/` — `plan/loot-recommendation/` contains plan, formula, data model, and API spec for the recommendation engine.
+- **Race/Class validation** (`plan/race-class-validation/`): Reference data for WoW race-class combinations, class specs, and class armor types. Validated via `ValidationModule` (`@Global()`).
+  - Races are proper DB entities (not string enums) to support faction + dual-faction races.
+  - Classes are string enums (fixed WoW concept); validated through `race_classes`, `class_specs`, and `class_armor` reference tables.
+  - `class_armor.armor_subclass` uses a FK to `armor_subclasses` lookup table (migration 009) instead of the original inline CHECK constraint.
+  - `characters.player_class` has a FK to `class_armor(class_name)` via `fk_characters_player_class` (migration 008, `NOT VALID`).

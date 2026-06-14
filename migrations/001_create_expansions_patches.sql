@@ -20,5 +20,5 @@ CREATE TABLE IF NOT EXISTS patches (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_patches_expansion_id ON patches(expansion_id);
-CREATE INDEX idx_patches_patch_number ON patches(patch_number);
+CREATE INDEX IF NOT EXISTS idx_patches_expansion_id ON patches(expansion_id);
+CREATE INDEX IF NOT EXISTS idx_patches_patch_number ON patches(patch_number);

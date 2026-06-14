@@ -132,7 +132,10 @@ export class RaidbotsService {
 
         // Armor type validation: skip items whose armor type doesn't match character class
         if (
-          !this.validationService.validateClassArmor(character.playerClass, matchedItem.subclass)
+          !(await this.validationService.validateClassArmor(
+            character.playerClass,
+            matchedItem.subclass,
+          ))
         ) {
           this.logger.debug('Armor type mismatch — skipping item', {
             character: character.name,

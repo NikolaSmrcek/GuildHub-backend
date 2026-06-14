@@ -14,9 +14,10 @@ CREATE TABLE IF NOT EXISTS specs (
     FOREIGN KEY (class_name) REFERENCES class_armor(class_name)
 );
 
--- Populate from the already-seeded class_specs
+-- Populate from class_specs (idempotent — may already have data from a previous run)
 INSERT INTO specs (class_name, spec_name)
-SELECT class_name, spec_name FROM class_specs;
+SELECT class_name, spec_name FROM class_specs
+ON CONFLICT (class_name, spec_name) DO NOTHING;
 
 -- ============================================================
 -- ALTER CHARACTERS
@@ -31,9 +32,12 @@ ALTER TABLE characters ADD COLUMN IF NOT EXISTS race_id UUID REFERENCES races(id
 ALTER TABLE characters ADD COLUMN IF NOT EXISTS spec_id UUID REFERENCES specs(id);
 
 -- Add FK on existing player_class column
+-- NOT VALID: skips the initial row-by-row validation against class_armor.
+-- Existing character data was written before this constraint existed and is
+-- trusted; new/updated rows are enforced.
 DO $$ BEGIN
     ALTER TABLE characters ADD CONSTRAINT fk_characters_player_class
-        FOREIGN KEY (player_class) REFERENCES class_armor(class_name);
+        FOREIGN KEY (player_class) REFERENCES class_armor(class_name) NOT VALID;
 EXCEPTION
     WHEN duplicate_object THEN NULL;
 END $$;
